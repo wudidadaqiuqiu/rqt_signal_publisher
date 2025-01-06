@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
-package_name = 'rqt_publisher'
+package_name = 'rqt_signal_publisher'
 
 setup(
     name=package_name,
     version='1.5.0',
     # packages=[package_name],
-    packages=find_packages('src'),  # 自动发现src目录下的包，包括rqt_publisher和signal_publisher
+    packages=find_packages('src'),
     package_dir={'': 'src'},
     data_files=[
         ('share/ament_index/resource_index/packages',
@@ -34,7 +34,7 @@ setup(
     license='BSD',
     entry_points={
         'console_scripts': [
-            'rqt_publisher = ' + package_name + '.main:main',
+            'rqt_signal_publisher = ' + package_name + '.main:main',
         ],
     },
 )

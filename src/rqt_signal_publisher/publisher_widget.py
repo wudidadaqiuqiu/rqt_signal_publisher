@@ -65,8 +65,8 @@ class PublisherWidget(QWidget):
         self._topic_dict = {}
         self._update_thread = WorkerThread(self._update_thread_run, self._update_finished)
 
-        package_path = get_package_path('rqt_publisher')
-        ui_file = os.path.join(package_path, 'share', 'rqt_publisher', 'resource', 'Publisher.ui')
+        package_path = get_package_path('rqt_signal_publisher')
+        ui_file = os.path.join(package_path, 'share', 'rqt_signal_publisher', 'resource', 'Publisher.ui')
         loadUi(ui_file, self,
                {'ExtendedComboBox': ExtendedComboBox, 'PublisherTreeWidget': PublisherTreeWidget, 
                 'SignalPublisherWidget': SignalPublisherWidget})

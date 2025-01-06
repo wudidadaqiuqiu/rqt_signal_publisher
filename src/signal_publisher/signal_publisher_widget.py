@@ -7,7 +7,7 @@ class SignalPublisherWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)  # 调用父类构造函数
         self.setWindowTitle("QWidget 继承示例")
-        print(self.width(), self.height())
+        # print(self.width(), self.height())
         self.setGeometry(100, 100, 400, 300)  # 设置窗口的位置和大小
 
     def paintEvent(self, event):

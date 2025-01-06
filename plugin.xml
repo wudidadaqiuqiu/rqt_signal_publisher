@@ -1,5 +1,5 @@
-<!-- <library path="src">
-  <class name="Publisher" type="rqt_publisher.publisher.Publisher" base_class_type="rqt_gui_py::Plugin">
+<library path="src">
+  <class name="Publisher" type="rqt_signal_publisher.publisher.Publisher" base_class_type="rqt_gui_py::Plugin">
     <description>
       A Python GUI plugin publishing ROS messages.
     </description>
@@ -14,4 +14,4 @@
       <statustip>A Python GUI plugin for publishing ROS messages.</statustip>
     </qtgui>
   </class>
-</library> -->
+</library>
