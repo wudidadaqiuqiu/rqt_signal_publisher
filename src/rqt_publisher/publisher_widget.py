@@ -49,6 +49,7 @@ from rosidl_runtime_py.utilities import get_message
 from rqt_py_common.extended_combo_box import ExtendedComboBox
 
 from .publisher_tree_widget import PublisherTreeWidget
+from signal_publisher.signal_publisher_widget import SignalPublisherWidget
 
 # main class inherits from the ui window class
 class PublisherWidget(QWidget):
@@ -67,7 +68,8 @@ class PublisherWidget(QWidget):
         package_path = get_package_path('rqt_publisher')
         ui_file = os.path.join(package_path, 'share', 'rqt_publisher', 'resource', 'Publisher.ui')
         loadUi(ui_file, self,
-               {'ExtendedComboBox': ExtendedComboBox, 'PublisherTreeWidget': PublisherTreeWidget})
+               {'ExtendedComboBox': ExtendedComboBox, 'PublisherTreeWidget': PublisherTreeWidget, 
+                'SignalPublisherWidget': SignalPublisherWidget})
         self.refresh_button.setIcon(QIcon.fromTheme('view-refresh'))
         self.refresh_button.clicked.connect(self.refresh_combo_boxes)
         self.add_publisher_button.setIcon(QIcon.fromTheme('list-add'))

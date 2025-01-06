@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>739</width>
-    <height>406</height>
+    <width>889</width>
+    <height>686</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -180,25 +180,56 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2"/>
    </item>
    <item>
-    <widget class="PublisherTreeWidget" name="publisher_tree_widget">
-     <property name="contextMenuPolicy">
-      <enum>Qt::CustomContextMenu</enum>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>2</verstretch>
+      </sizepolicy>
      </property>
-     <property name="toolTip">
-      <string>Right click on item or selection for more options.</string>
-     </property>
-     <property name="dragEnabled">
-      <bool>true</bool>
-     </property>
-     <property name="dragDropMode">
-      <enum>QAbstractItemView::DragOnly</enum>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::ExtendedSelection</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QSplitter" name="splitter">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <widget class="PublisherTreeWidget" name="publisher_tree_widget">
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
+         </property>
+         <property name="toolTip">
+          <string>Right click on item or selection for more options.</string>
+         </property>
+         <property name="dragEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="dragDropMode">
+          <enum>QAbstractItemView::DragOnly</enum>
+         </property>
+         <property name="selectionMode">
+          <enum>QAbstractItemView::ExtendedSelection</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="SignalPublisherWidget" name="signal_publisher_widget" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
@@ -213,6 +244,11 @@
    <class>PublisherTreeWidget</class>
    <extends>QTreeView</extends>
    <header>rqt_publisher.publisher_tree_widget</header>
+  </customwidget>
+  <customwidget>
+   <class>SignalPublisherWidget</class>
+   <extends>QWidget</extends>
+   <header>signal_publisher.signal_publisher_widget</header>
   </customwidget>
  </customwidgets>
  <resources/>
