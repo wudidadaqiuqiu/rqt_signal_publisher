@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QWidget, QFrame, QPushButton, QListWidgetItem
+from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QWidget, QFrame, 
+    QPushButton, QListWidgetItem, QApplication)
 from PyQt5.QtCore import Qt, QMimeData
 from PyQt5.QtGui import QDrag
 
@@ -24,21 +25,38 @@ class SignalItemWidget(QWidget):
         self.setAutoFillBackground(True)
         # 启用选择
         self.setStyleSheet("background-color: lightgray;")
-        self.setAcceptDrops(True)
+        # self.setAcceptDrops(True)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             # 在这里处理点击事件
             # print(f"Item clicked: {self.label.text()}")
             self.list_item.setSelected(True)  # 手动将 QListWidgetItem 设置为选中
-
+            self.dragStartPosition = event.pos()
+    
+    def mouseMoveEvent(self, event):
+        if not (event.buttons() == Qt.LeftButton):
+            return
+        if ((event.pos() - self.dragStartPosition).manhattanLength()
+            < QApplication.startDragDistance()):
+            return
+        self.startDrag(event)
+        
     def startDrag(self, event):
-        #@创建 QDrag 对象并设置数据
-        drag = QDrag(self)
+        print("Start drag")
+        # 开始拖拽
         mime_data = QMimeData()
-        mime_data.setText(self.label.text())  # 使用文本作为拖动数据
+        mime_data.setText(self.label.text())  # 设置拖拽的数据
+        
+        drag = QDrag(self)
         drag.setMimeData(mime_data)
+        drag.setHotSpot(event.pos())  # 设置拖拽的热点位置
+        drag.exec_(Qt.MoveAction)  # 执行拖拽
 
-        print("startDrag")
-        # 启动拖动操作
-        drag.exec_(Qt.CopyAction | Qt.MoveAction)
+    # def dragEnterEvent(self, event):
+    #     if event.mimeData().hasText():
+    #         event.acceptProposedAction()
+
+    # def dropEvent(self, event):
+    #     print("Dropped item:", event.mimeData().text())
+    #     event.acceptProposedAction()
