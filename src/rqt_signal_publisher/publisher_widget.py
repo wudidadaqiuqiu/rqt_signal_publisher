@@ -59,8 +59,20 @@ class PublisherWidget(QWidget):
     remove_publisher = Signal(int)
     clean_up_publishers = Signal()
 
+    def dragEnterEvent(self, event):
+        # 只接受带有文本的数据
+        if event.mimeData().hasText():
+            event.accept()  # 接受拖拽事件
+
+    def dropEvent(self, event):
+        # 获取拖拽的文本数据
+        text = event.mimeData().text()
+        print(f"Item dropped: {text}")
+        event.accept()  # 确认接收拖拽
+
     def __init__(self, node, parent=None):
         super(PublisherWidget, self).__init__(parent)
+        self.setAcceptDrops(True)
         self._node = node
         self._topic_dict = {}
         self._update_thread = WorkerThread(self._update_thread_run, self._update_finished)

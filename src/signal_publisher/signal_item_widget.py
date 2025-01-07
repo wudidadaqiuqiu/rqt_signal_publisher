@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QWidget, QFrame, 
     QPushButton, QListWidgetItem, QApplication)
 from PyQt5.QtCore import Qt, QMimeData
-from PyQt5.QtGui import QDrag
+from PyQt5.QtGui import QDrag, QPixmap
 
 class SignalItemWidget(QWidget):
     def __init__(self, text, list_item: QListWidgetItem, parent=None):
@@ -50,7 +50,12 @@ class SignalItemWidget(QWidget):
         
         drag = QDrag(self)
         drag.setMimeData(mime_data)
-        drag.setHotSpot(event.pos())  # 设置拖拽的热点位置
+        # drag.setHotSpot(event.pos())  # 设置拖拽的热点位置
+
+        pixmap = QPixmap(self.size())
+        self.render(pixmap)
+        drag.setPixmap(pixmap)
+            
         drag.exec_(Qt.MoveAction)  # 执行拖拽
 
     # def dragEnterEvent(self, event):
