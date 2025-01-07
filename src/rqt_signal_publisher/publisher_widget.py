@@ -78,6 +78,9 @@ class PublisherWidget(QWidget):
 
         self.refresh_combo_boxes()
 
+        self.publisher_tree_widget: PublisherTreeWidget
+        self.signal_publisher_widget: SignalPublisherWidget
+
         self.publisher_tree_widget.model().item_value_changed.connect(self.change_publisher)
         self.publisher_tree_widget.remove_publisher.connect(self.remove_publisher)
         self.publisher_tree_widget.publish_once.connect(self.publish_once)
@@ -85,6 +88,8 @@ class PublisherWidget(QWidget):
             self.publisher_tree_widget.remove_selected_publishers)
         self.clear_button.clicked.connect(self.clean_up_publishers)
 
+        
+        
     def shutdown_plugin(self):
         self._update_thread.kill()
 

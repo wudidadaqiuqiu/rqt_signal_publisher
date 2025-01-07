@@ -1,31 +1,53 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QListWidget, QHBoxLayout, QListWidgetItem
+
 
 class SignalPublisherWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)  # 调用父类构造函数
-        self.setWindowTitle("QWidget 继承示例")
-        # print(self.width(), self.height())
-        self.setGeometry(100, 100, 400, 300)  # 设置窗口的位置和大小
+        # 布局
+        self.layout = QVBoxLayout()
+        
+        # 创建 QListWidget
+        self.list_widget = QListWidget()
+        self.layout.addWidget(self.list_widget)
 
-    def paintEvent(self, event):
-        # 重写 paintEvent 方法，进行自定义绘制
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)  # 开启抗锯齿
-        painter.setBrush(QColor(0, 255, 0))  # 设置填充颜色
-        painter.setPen(Qt.black)  # 设置边框颜色
-        painter.drawEllipse(50, 50, 100, 100)  # 绘制一个圆形
+        # 创建按钮布局
+        self.button_layout = QHBoxLayout()
+        
+        # 添加按钮
+        self.add_button = QPushButton("Add Widget Item")
+        self.add_button.clicked.connect(self.add_item)
+        self.button_layout.addWidget(self.add_button)
+        
+        # 删除按钮
+        self.remove_button = QPushButton("Remove Item")
+        self.remove_button.clicked.connect(self.remove_item)
+        self.button_layout.addWidget(self.remove_button)
 
-        painter.setBrush(QColor(255, 0, 0))  # 改变填充颜色
-        painter.drawRect(200, 50, 100, 100)  # 绘制一个矩形
+        # 将按钮布局添加到主布局中
+        self.layout.addLayout(self.button_layout)
 
-    def mousePressEvent(self, event):
-        # 重写 mousePressEvent 方法，处理鼠标点击事件
-        if event.button() == Qt.LeftButton:
-            print("鼠标点击事件：", event.pos())
-            self.update()  # 触发重绘
+        # 设置窗口的布局
+        self.setLayout(self.layout)
+
+    def add_item(self):
+        # 创建一个自定义的 QWidget，可以是一个按钮、标签等
+        custom_widget = QPushButton("Custom Button")
+        
+        # 创建一个 QListWidgetItem
+        list_item = QListWidgetItem(self.list_widget)
+        
+        # 将自定义 widget 设置为该 item 的 widget
+        list_item.setSizeHint(custom_widget.sizeHint())  # 设置大小
+        self.list_widget.setItemWidget(list_item, custom_widget)  # 设置 widget
+
+    def remove_item(self):
+        # 删除选中的项
+        selected_items = self.list_widget.selectedItems()  # 获取选中的项
+        if selected_items:
+            for item in selected_items:
+                self.list_widget.takeItem(self.list_widget.row(item))  # 删除该项
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
