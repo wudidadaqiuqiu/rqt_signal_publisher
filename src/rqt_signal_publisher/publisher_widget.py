@@ -40,6 +40,11 @@ from python_qt_binding.QtCore import Signal, Slot
 from python_qt_binding.QtGui import QIcon
 from python_qt_binding.QtWidgets import QWidget
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QDragEnterEvent
+from PyQt5.QtWidgets import QTreeView
+from .publisher_tree_model import PublisherTreeModel
+
 from qt_gui.ros_package_helper import get_package_path
 from qt_gui_py_common.worker_thread import WorkerThread
 
@@ -60,15 +65,51 @@ class PublisherWidget(QWidget):
     clean_up_publishers = Signal()
 
     def dragEnterEvent(self, event):
-        # 只接受带有文本的数据
-        if event.mimeData().hasText():
-            event.accept()  # 接受拖拽事件
+        event.accept() # 进入窗口
 
-    def dropEvent(self, event):
-        # 获取拖拽的文本数据
-        text = event.mimeData().text()
-        print(f"Item dropped: {text}")
-        event.accept()  # 确认接收拖拽
+    def dragMoveEvent(self, event):
+        # print("drag move event")
+        # 拖拽过程中，改变目标项的背景色
+        pos = self.publisher_tree_widget.viewport().mapFrom(self, event.pos())
+        index = self.publisher_tree_widget.indexAt(pos)  # 获取目标项的索引
+        if index.isValid():
+            # 获取目标项
+            # print("index is valid")
+            pass
+            # target_item = self.publisher_tree_widget.model().itemFromIndex(index)
+            # target_item.setData(QColor(0, 255, 0), Qt.BackgroundRole)
+        event.accept()  # 接受拖拽事件
+
+    def dropEvent(self, event: QDragEnterEvent):
+        # print("dropEvent called")
+        pos = self.publisher_tree_widget.viewport().mapFrom(self, event.pos())
+        index = self.publisher_tree_widget.indexAt(pos)  # 获取目标项的索引
+        if index.isValid():
+            # target_item: PublisherTreeModel
+            target_item = self.publisher_tree_widget.model().itemFromIndex(index)
+            if target_item:
+                mime_data = event.mimeData()
+                if mime_data.hasText():
+                    path = getattr(target_item, '_path', None)
+                    # print(index.row(), index.column())
+                    # print(index)
+                    model: PublisherTreeModel = index.model()
+                    data = model.data(index, Qt.DisplayRole)  # 获取显示数据
+                    if index.column() == model._column_index['expression']:
+                        model.setData(index, mime_data.text(), 2)
+                    # print(Qt.DisplayRole)
+                    # print(f"Data at index: {data}")
+                    # print(target_item.data(0))
+                    # print("目标项: ", path)
+                    # print("放置文本: ", mime_data.text())
+                    # print(target_item.data(index, 1))
+                    # target_item.setText(mime_data.text())  # 修改目标项的文本
+                    event.accept()  # 接受放置事件
+                else:
+                    event.ignore()  # 不接受事件
+        else:
+            event.ignore()
+
 
     def __init__(self, node, parent=None):
         super(PublisherWidget, self).__init__(parent)
@@ -90,7 +131,7 @@ class PublisherWidget(QWidget):
 
         self.refresh_combo_boxes()
 
-        self.publisher_tree_widget: PublisherTreeWidget
+        self.publisher_tree_widget: QTreeView
         self.signal_publisher_widget: SignalPublisherWidget
 
         self.publisher_tree_widget.model().item_value_changed.connect(self.change_publisher)

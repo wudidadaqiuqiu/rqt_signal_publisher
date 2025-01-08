@@ -43,7 +43,7 @@ class SignalItemWidget(QWidget):
         self.startDrag(event)
         
     def startDrag(self, event):
-        print("Start drag")
+        # print("Start drag")
         # 开始拖拽
         mime_data = QMimeData()
         mime_data.setText(self.label.text())  # 设置拖拽的数据
@@ -57,11 +57,3 @@ class SignalItemWidget(QWidget):
         drag.setPixmap(pixmap)
             
         drag.exec_(Qt.MoveAction)  # 执行拖拽
-
-    # def dragEnterEvent(self, event):
-    #     if event.mimeData().hasText():
-    #         event.acceptProposedAction()
-
-    # def dropEvent(self, event):
-    #     print("Dropped item:", event.mimeData().text())
-    #     event.acceptProposedAction()

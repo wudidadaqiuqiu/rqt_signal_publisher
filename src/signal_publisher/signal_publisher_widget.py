@@ -30,11 +30,13 @@ class SignalPublisherWidget(QWidget):
         # 设置窗口的布局
         self.setLayout(self.layout)
 
-    def add_item(self):
+        self.add_item("SignalGenerator()")
+
+    def add_item(self, label: str = None):
         item_count = self.list_widget.count()  # 获取当前列表项的数量
         # self.list_widget.addItem(f"Item {item_count + 1}")  # 添加新项
         list_item = QListWidgetItem(self.list_widget)
-        item_widget = SignalItemWidget(f"Item {item_count}", list_item, self)
+        item_widget = SignalItemWidget(f"Item {item_count}" if label is None else label, list_item, self)
         item_widget.setFixedHeight(50)
         list_item.setSizeHint(item_widget.sizeHint())  # 设置项的大小
         self.list_widget.setItemWidget(list_item, item_widget)  # 将 SignalItemWidget 添加到 ListWidget 中

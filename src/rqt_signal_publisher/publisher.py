@@ -47,6 +47,11 @@ from rqt_gui_py.plugin import Plugin
 from rqt_py_common.topic_helpers import get_slot_type
 
 from .publisher_widget import PublisherWidget
+from signal_publisher.signal_eval import *
+custom_globals = {
+    'SignalGenerator': SignalGenerator,
+}
+custom_topic_path_generator_dict = {}
 
 _list_types = [list, tuple, array.array]
 try:
@@ -248,9 +253,11 @@ class Publisher(Plugin):
                 try:
                     self._fill_message_slots(
                         publisher_info['message_instance'], publisher_info['topic_name'],
-                        publisher_info['expressions'], publisher_info['counter'])
+                        publisher_info['expressions'], publisher_info['counter'], True)
 
                 except Exception as e:
+                    print("exception:", e)
+                    print("exception:", publisher_info['message_instance'].param.ki)
                     if old_expression is not None:
                         publisher_info['expressions'][topic_name] = old_expression
                     else:
@@ -303,7 +310,7 @@ class Publisher(Plugin):
         successful_eval = True
         try:
             # try to evaluate expression
-            value = eval(expression, {}, self._eval_locals)
+            value = eval(expression, custom_globals, self._eval_locals)
         except Exception as e:
             qWarning('Python eval failed for expression "{}"'.format(expression) +
                      ' with an exception "{}"'.format(e))
@@ -328,14 +335,41 @@ class Publisher(Plugin):
 
         if successful_eval and isinstance(value, slot_type):
             return True, value
+        elif successful_eval and isinstance(value.get_value(), slot_type):
+            return True, (value,)
         else:
             qWarning('Publisher._evaluate_expression(): failed to evaluate ' +
                      'expression: "%s" as Python type "%s"' % (
                       expression, slot_type))
         return False, None
 
-    def _fill_message_slots(self, message, topic_name, expressions, counter):
-        global _list_types
+    def find_publisher_dict(self, topic_name_path: str) -> dict[str, any]:
+        temp_value_ = None
+        for temp_ in self._publishers.values():
+            temp_: dict[str, str]
+            if topic_name_path.startswith(temp_['topic_name']):
+                temp_value_ = temp_
+                return temp_value_
+        if temp_value_ is not None:
+            raise ValueError('topic name is not unique')
+    
+    def get_message_field(self, topic_name_path: str):
+        global custom_topic_path_generator_dict
+        if topic_name_path in custom_topic_path_generator_dict:
+            return (custom_topic_path_generator_dict[topic_name_path],)
+        publisher = self.find_publisher_dict(topic_name_path)
+        message_instance = publisher['message_instance']
+        # return message_instance
+        path = topic_name_path.lstrip('/').split('/')
+        if len(path) == 1:
+            return message_instance
+        temp_ = message_instance
+        for field_ in path[1:]:
+            temp_ = getattr(temp_, field_)
+        return temp_
+        
+    def _fill_message_slots(self, message, topic_name, expressions, counter, try_ = False):
+        global _list_types, custom_topic_path_generator_dict
         if topic_name in expressions and len(expressions[topic_name]) > 0:
 
             # get type
@@ -345,9 +379,16 @@ class Publisher(Plugin):
                 message_type = type(message)
 
             self._eval_locals['i'] = counter
-            success, value = self._evaluate_expression(expressions[topic_name], message_type)
+            if try_:
+                success, value = self._evaluate_expression(expressions[topic_name], message_type)
+                # print(self._publishers)
+            else:
+                success, value = True, self.get_message_field(topic_name)
+            # print(message, message_type, topic_name, expressions)
+            # print(value)
             if not success:
                 value = message_type()
+            # print(f"return {value}")
             return value
 
         # if no expression exists for this topic_name, continue with it's child slots
@@ -355,9 +396,19 @@ class Publisher(Plugin):
             for slot_name in message.get_fields_and_field_types().keys():
                 value = self._fill_message_slots(
                     getattr(message, slot_name),
-                    topic_name + '/' + slot_name, expressions, counter)
+                    topic_name + '/' + slot_name, expressions, counter, try_)
                 if value is not None:
-                    setattr(message, slot_name, value)
+                    if type(value) == (typetemp_ := type(getattr(message, slot_name))):
+                        setattr(message, slot_name, value)
+                        return None
+                    elif type(value[0].get_value()) == typetemp_:
+                        # print("SIG VALLUE!!!", topic_name, slot_name)
+                        if try_ and topic_name + '/' + slot_name not in custom_topic_path_generator_dict:
+                            custom_topic_path_generator_dict[topic_name + '/' + slot_name] = value[0]
+                        if not try_:
+                            temp_value_ = custom_topic_path_generator_dict[topic_name + '/' + slot_name].get_value()
+                            # print(temp_value_)
+                            setattr(message, slot_name, temp_value_)
 
         elif type(message) in _list_types and (len(message) > 0):
             for index, slot in enumerate(message):
