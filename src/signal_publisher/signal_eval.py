@@ -24,6 +24,10 @@ class SinGenerator(SignalGenerator):
         super().__init__()
         self.amplitude = amplitude
         self.frequency = frequency
+    def __str__(self):
+        return "SinGenerator(amplitude={}, frequency={})".format(self.amplitude, self.frequency)
+    def __repr__(self):
+        return self.__str__()
     def get_value(self):
         elapsed_time = super().get_elapsed_time()
         return self.amplitude * math.sin(2 * math.pi * self.frequency * elapsed_time)

@@ -396,13 +396,18 @@ class Publisher(Plugin):
                     getattr(message, slot_name),
                     topic_name + '/' + slot_name, expressions, counter, try_)
                 if value is not None:
+                    # print(value)
                     if type(value) == (typetemp_ := type(getattr(message, slot_name))):
+                        # custom_topic_path_generator_dict[topic_name + '/' + slot_name] = None
+                        if topic_name + '/' + slot_name in custom_topic_path_generator_dict:
+                           custom_topic_path_generator_dict.pop(topic_name + '/' + slot_name)
                         setattr(message, slot_name, value)
                         return None
                     elif type(value[0].get_value()) == typetemp_:
                         # print("SIG VALLUE!!!", topic_name, slot_name)
-                        if try_ and topic_name + '/' + slot_name not in custom_topic_path_generator_dict:
-                            custom_topic_path_generator_dict[topic_name + '/' + slot_name] = value[0]
+                        custom_topic_path_generator_dict[topic_name + '/' + slot_name] = value[0]
+                        # if try_ and topic_name + '/' + slot_name not in custom_topic_path_generator_dict:
+                        #     custom_topic_path_generator_dict[topic_name + '/' + slot_name] = value[0]
                         if not try_:
                             temp_value_ = custom_topic_path_generator_dict[topic_name + '/' + slot_name].get_value()
                             # print(temp_value_)

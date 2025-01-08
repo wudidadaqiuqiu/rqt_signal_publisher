@@ -90,11 +90,11 @@ class PublisherWidget(QWidget):
             if target_item:
                 mime_data = event.mimeData()
                 if mime_data.hasText():
-                    path = getattr(target_item, '_path', None)
+                    # path = getattr(target_item, '_path', None)
                     # print(index.row(), index.column())
                     # print(index)
                     model: PublisherTreeModel = index.model()
-                    data = model.data(index, Qt.DisplayRole)  # 获取显示数据
+                    # data = model.data(index, Qt.DisplayRole)  # 获取显示数据
                     if index.column() == model._column_index['expression']:
                         model.setData(index, mime_data.text(), 2)
                     # print(Qt.DisplayRole)
