@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QListWidget, QHBoxLayout, QListWidgetItem
 from .draggable_list_widget import DraggableListWidget
 from .signal_item_widget import SignalItemWidget
+from .signal_eval import *
 class SignalPublisherWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)  # 调用父类构造函数
@@ -11,26 +12,12 @@ class SignalPublisherWidget(QWidget):
         self.list_widget = DraggableListWidget()
         self.layout.addWidget(self.list_widget)
 
-        # 创建按钮布局
-        self.button_layout = QHBoxLayout()
-        
-        # 添加按钮
-        self.add_button = QPushButton("Add Widget Item")
-        self.add_button.clicked.connect(self.add_item)
-        self.button_layout.addWidget(self.add_button)
-        
-        # 删除按钮
-        self.remove_button = QPushButton("Remove Item")
-        self.remove_button.clicked.connect(self.remove_item)
-        self.button_layout.addWidget(self.remove_button)
-
-        # 将按钮布局添加到主布局中
-        self.layout.addLayout(self.button_layout)
-
         # 设置窗口的布局
         self.setLayout(self.layout)
-
-        self.add_item("SignalGenerator()")
+        global custom_globals
+        for k, v in custom_globals.items():
+            widget = self.add_item(k)
+            widget.load_signal(v)
 
     def add_item(self, label: str = None):
         item_count = self.list_widget.count()  # 获取当前列表项的数量
@@ -39,8 +26,8 @@ class SignalPublisherWidget(QWidget):
         item_widget = SignalItemWidget(f"Item {item_count}" if label is None else label, list_item, self)
         item_widget.setFixedHeight(50)
         list_item.setSizeHint(item_widget.sizeHint())  # 设置项的大小
-        self.list_widget.setItemWidget(list_item, item_widget)  # 将 SignalItemWidget 添加到 ListWidget 中
-    
+        self.list_widget.setItemWidget(list_item, item_widget)
+        return item_widget
 
     def remove_item(self):
         # 删除选中的项
@@ -49,10 +36,10 @@ class SignalPublisherWidget(QWidget):
         if selected_items:
             print("Deleting items")
             for item in selected_items:
-                widget = self.list_widget.itemWidget(item)  # 获取绑定的 SignalItemWidget
+                widget = self.list_widget.itemWidget(item)
                 if widget:
                     print("Deleting widget")
-                    widget.deleteLater()  # 删除 SignalItemWidget
+                    widget.deleteLater()
                 print("Deleting item")
                 self.list_widget.removeItemWidget(item)  # 从列表中移除该 widget
                 self.list_widget.takeItem(self.list_widget.row(item))  # 删除 QListWidgetItem

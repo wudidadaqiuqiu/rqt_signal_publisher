@@ -48,9 +48,7 @@ from rqt_py_common.topic_helpers import get_slot_type
 
 from .publisher_widget import PublisherWidget
 from signal_publisher.signal_eval import *
-custom_globals = {
-    'SignalGenerator': SignalGenerator,
-}
+
 custom_topic_path_generator_dict = {}
 
 _list_types = [list, tuple, array.array]
@@ -306,7 +304,7 @@ class Publisher(Plugin):
 
     def _evaluate_expression(self, expression, slot_type):
         global _list_types
-        global _numeric_types
+        global _numeric_types, custom_globals
         successful_eval = True
         try:
             # try to evaluate expression
