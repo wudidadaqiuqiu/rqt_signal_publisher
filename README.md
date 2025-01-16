@@ -5,3 +5,5 @@
 
 ## English instructions
 - Add the functionality to publish commonly used signals based on the existing framework.
+
+sudo apt install wmctrl
